@@ -1,0 +1,8 @@
+A is_friends_with B
+A is_friends_with C
+B is_friends_with D
+C is_friends_with D
+A is_friends_with D
+C is_friends_with E
+E is_friends_with D
+E is_friends_with B
