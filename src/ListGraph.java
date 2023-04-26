@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
+import util.*;
 
 public class ListGraph {
     private VertexNode vertices;
@@ -125,7 +126,7 @@ public class ListGraph {
         while (current != null) {
             EdgeNode edge = current.edgeList;
             while (edge != null) {
-                System.out.println(current.label + " -- " + edge.label + " --> " + edge.sink.label);
+                System.out.println(current.label + " --" + edge.label + "--> " + edge.sink.label);
                 edge = edge.next;
             }
             current = current.next;
@@ -172,7 +173,7 @@ public class ListGraph {
                 while (subpaths.hasNext()) {
                     // add the paths with the current source and its subpaths to a list
                     Path pathToAdd = subpaths.next();
-                    pathList.add(new Path(source.label + " -- " + edge.label + " --> " + pathToAdd.pathString, pathToAdd.length+1));   
+                    pathList.add(new Path(source.label + " --" + edge.label + "--> " + pathToAdd.pathString, pathToAdd.length+1));   
                 }
             }
             edge = edge.next;
@@ -205,10 +206,10 @@ public class ListGraph {
                     // add the paths with the current source and its subpaths to a list
                     if (checkLength) {
                         if (pathToAdd.length+1 == length) {
-                            pathList.add(new Path(source.label + " -- " + edge.label + " --> " + pathToAdd.pathString, pathToAdd.length+1));
+                            pathList.add(new Path(source.label + " --" + edge.label + "--> " + pathToAdd.pathString, pathToAdd.length+1));
                         }   
                     } else {
-                        pathList.add(new Path(source.label + " -- " + edge.label + " --> " + pathToAdd.pathString, pathToAdd.length+1));
+                        pathList.add(new Path(source.label + " --" + edge.label + "--> " + pathToAdd.pathString, pathToAdd.length+1));
                     }
                 }
             }
@@ -218,97 +219,49 @@ public class ListGraph {
         return pathList;
     }
 
-    /*public PathList shortestPath(VertexNode source, VertexNode sink) {}*/
-
     // Find shortest path(s) with minimum number of edges
-    
-    // Find paths that match a pattern between A and B
-        /* 
-        ( ) = grouping
-        | = or
-        * = previous edge label occurs 0 or more times
-        + = previous edge label occurs 1 or more times
-        ? = previous edge label occurs 0 or 1 time
-        . = any single edge label
-        R = a+(d|b)ab matches adab, aadab, abab etc.
-        R = a(bc)* matches abc, a, abcbc etc.
-        R = a.c matches abc, adc, etc.
-        R = ab? matches a, ab
-        */
-    
-    ////               ////
-    //  nested classes  //
-    ////              ////
-
-    public class VertexNode {
-        public final String label;
-        public EdgeNode edgeList;
-        public VertexNode next;
-        public boolean visited;
-
-        public VertexNode(String vertexLabel) {
-            label = vertexLabel;
-            visited = false;
-        }
-
-        public boolean equals(VertexNode other) {
-            return (label.equals(other.label));
-        }
-    } // VertexNode
-
-    public class EdgeNode {
-        public final VertexNode sink;
-        public final String label;
-        public EdgeNode next;
-
-        public EdgeNode(String edgeLabel, VertexNode dest) {
-            sink = dest;
-            label = edgeLabel;
-        }
-
-        public boolean equals(EdgeNode other) {
-            return (label.equals(other.label) && sink.label.equals(other.sink.label));
-        }
-    } // EdgeNode
-    
-    public class Path {
-        public final String pathString;
-        public final int length;
-        public Path next;
-
-        public Path(String path, int len) {
-            pathString = path;
-            length = len;
-            next = null;
-        }
-    } // Path
-
-    public class PathList {
-        private Path first;
-        private Path last;
-        public Path current;
-
-        public PathList() {}
-
-        public PathList(Path path) { first  = last = current = path; }
-
-        public void add(Path path) {
-            if (first == null) { first = last = current = path; } 
-            else { 
-                last.next = path;
-                last = last.next; 
+    public Path shortestPath(VertexNode source, VertexNode sink) {
+        VertexQueue q = new VertexQueue();
+        q.enqueue(source);
+        while (!q.isEmpty()) {
+            VertexNode vertex = q.dequeue();
+            EdgeNode edge = vertex.edgeList;
+            while(edge != null) {            
+                // if this edge is not visited
+                if (!edge.sink.visited) {
+                    edge.sink.visited = true;
+                    q.enqueue(edge.sink); 
+                }
+                edge = edge.next;
             }
         }
-
-        public boolean hasNext() { return current != null; }
-
-        public Path next() {
-            Path temp = current;
-            current = current.next;
-            return temp;
+        throw new UnsupportedOperationException();
+    }
+    
+    // Find paths that match a pattern between A and B
+    /* 
+    ( ) = grouping
+    | = or
+    * = previous edge label occurs 0 or more times
+    + = previous edge label occurs 1 or more times
+    ? = previous edge label occurs 0 or 1 time
+    . = any single edge label
+    R = a+(d|b)ab matches adab, aadab, abab etc.
+    R = a(bc)* matches abc, a, abcbc etc.
+    R = a.c matches abc, adc, etc.
+    R = ab? matches a, ab
+    */
+    public PathList patternedPaths(VertexNode source, VertexNode sink, String pattern) { 
+        PathList patternPaths = new PathList();
+        PathList paths = allPaths(source, sink);
+        String[] patternArray = pattern.split(" ");
+        while (paths.hasNext()) {
+            boolean valid = true;
+            Path current = paths.next();
+            int patternIndex = 0;
+            LinkedListStack pathStack;
         }
-
-        public boolean isEmpty() { return first==null; }
+        throw new UnsupportedOperationException();
     }
 
 } // ListGraph

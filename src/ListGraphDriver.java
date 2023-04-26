@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.InputMismatchException;
+import util.*;
 
 public class ListGraphDriver {
 
@@ -15,14 +16,14 @@ public class ListGraphDriver {
         // graph.printEdges();
         System.out.println();
         System.out.print("Select a start vertex: ");
-        ListGraph.VertexNode start = graph.find(input.next());
+        VertexNode start = graph.find(input.next());
         input.nextLine();
         if (start == null) { 
             System.out.println("Entered vertex does not exist."); 
             System.exit(1);    
         }
         System.out.print("Select an end vertex: ");
-        ListGraph.VertexNode end = graph.find(input.next());
+        VertexNode end = graph.find(input.next());
         input.nextLine();
         if (end == null) { 
             System.out.println("Entered vertex does not exist."); 
@@ -36,14 +37,14 @@ public class ListGraphDriver {
             System.out.print("\nEnter a command: ");
             String command = input.next();
             input.nextLine();
-            ListGraph.PathList paths;
+            PathList paths;
             switch (command) {
                 case "a":
                     paths = graph.allPaths(start, end);
                     if (paths.isEmpty()) { System.out.println("No path exists."); }
                     else { 
                         while (paths.hasNext()) {
-                            ListGraph.Path path = paths.next();
+                            Path path = paths.next();
                             System.out.println(path.pathString + " length: " + path.length);
                         }
                     }
@@ -56,7 +57,7 @@ public class ListGraphDriver {
                         if (paths.isEmpty()) { System.out.println("No path exists."); }
                         else {
                             while (paths.hasNext()) {
-                                ListGraph.Path path = paths.next();
+                                Path path = paths.next();
                                 System.out.println(path.pathString + " length: " + path.length);
                             }
                         }
