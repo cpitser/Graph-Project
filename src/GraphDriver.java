@@ -2,7 +2,7 @@ import java.util.Scanner;
 import java.util.InputMismatchException;
 import util.*;
 
-public class ListGraphDriver {
+public class GraphDriver {
 
     public static void main(String[] args) {
         if (args.length != 1) {
@@ -10,7 +10,7 @@ public class ListGraphDriver {
             System.exit(1);
         }
         Scanner input = new Scanner(System.in);
-        ListGraph graph = new ListGraph(args[0]);
+        Graph graph = new Graph(args[0]);
         System.out.println();
         graph.printVertices();
         // graph.printEdges();
@@ -41,26 +41,14 @@ public class ListGraphDriver {
             switch (command) {
                 case "a":
                     paths = graph.allPaths(start, end);
-                    if (paths.isEmpty()) { System.out.println("No path exists."); }
-                    else { 
-                        while (paths.hasNext()) {
-                            Path path = paths.next();
-                            System.out.println(path.pathString + " length: " + path.length);
-                        }
-                    }
+                    paths.print();
                     break;
                 case "l":
                     System.out.print("Enter the length of paths you would like to find: ");
                     try {
                         int length = input.nextInt();
                         paths = graph.lengthPaths(start,start,end,length);
-                        if (paths.isEmpty()) { System.out.println("No path exists."); }
-                        else {
-                            while (paths.hasNext()) {
-                                Path path = paths.next();
-                                System.out.println(path.pathString + " length: " + path.length);
-                            }
-                        }
+                        paths.print();
                     } catch (InputMismatchException ime) {
                         System.out.println("Please enter a valid number.");
                     } finally {
@@ -68,8 +56,19 @@ public class ListGraphDriver {
                     }
                     break;
                 case "s":
+                    Path shortest = graph.shortestPath(start, end);
+                    if (shortest == null) { System.out.println("No path exists."); }
+                    else { System.out.println(shortest + " length: " + shortest.length); }
                     break;
                 case "p":
+                    System.out.println("When entering pattern, add spaces between each edge label.");
+                    System.out.println("Instead of .* use (.)* and do not use this ");
+                    System.out.print("Enter the pattern of edges of paths you would like to find: ");
+                    String pattern = input.nextLine();
+                    paths = graph.patternedPaths(start,end,pattern);
+                    System.out.println("Printing paths:");
+                    paths.print();
+                    System.out.println("Done printing paths.");
                     break;
                 case "q":
                     System.exit(0);
@@ -79,4 +78,4 @@ public class ListGraphDriver {
         }
     }
 
-}
+} // GraphDriver

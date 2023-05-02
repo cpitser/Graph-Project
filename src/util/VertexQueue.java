@@ -4,36 +4,30 @@ import java.util.NoSuchElementException;
 
 public class VertexQueue {
 
-    private Node front;
-    private Node end;
+    private QueueNode front;
+    private QueueNode end;
 
-    public void enqueue(VertexNode vertex) {
+    public void enqueue(VertexNode vertex, Path path) {
         if (front == null) { 
-            front = new Node(vertex); 
+            front = end = new QueueNode(vertex, path); 
         } else { 
-            end.next = new Node(vertex);
+            end.next = new QueueNode(vertex, path);
             end = end.next;
         }
     }
 
-    public VertexNode dequeue() {
+    public QueueNode dequeue() {
         if (front == null) {
             throw new NoSuchElementException();
         } else {
-            VertexNode temp = front.vertex;
+            QueueNode temp = front;
             front = front.next;
             return temp;
         }
     }
 
-    public VertexNode front() { return front.vertex; }
+    public QueueNode front() { return front; }
 
     public boolean isEmpty() { return front==null; }
 
-    private class Node {
-        public VertexNode vertex;
-        public Node next;
-        public Node(VertexNode vert) { vertex = vert; }
-    }
-
-}
+} // VertexNode

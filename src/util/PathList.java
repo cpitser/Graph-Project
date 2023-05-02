@@ -26,4 +26,16 @@ public class PathList {
     }
 
     public boolean isEmpty() { return first==null; }
-}
+
+    public void print() { 
+        Path temp = current;
+        if (this.isEmpty()) { System.out.println("No path exists."); }
+        else { 
+            while (this.hasNext()) {
+                Path path = this.next();
+                System.out.println(path + " length: " + path.length);
+            }
+        }
+        current = temp;
+    }
+} // PathList

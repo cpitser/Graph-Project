@@ -14,4 +14,6 @@ public class VertexNode {
     public boolean equals(VertexNode other) {
         return (label.equals(other.label));
     }
+
+    public String toString(){ return label; }
 } // VertexNode

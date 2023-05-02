@@ -2,14 +2,15 @@ import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.NoSuchElementException;
+import java.util.regex.*;
 import util.*;
 
-public class ListGraph {
+public class Graph {
     private VertexNode vertices;
     private int V;
     private Path memoization;
 
-    public ListGraph(String filename) {
+    public Graph(String filename) {
         V = 0;
         File file = new File(filename);
         initializeVertices(file);
@@ -173,7 +174,7 @@ public class ListGraph {
                 while (subpaths.hasNext()) {
                     // add the paths with the current source and its subpaths to a list
                     Path pathToAdd = subpaths.next();
-                    pathList.add(new Path(source.label + " --" + edge.label + "--> " + pathToAdd.pathString, pathToAdd.length+1));   
+                    pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));   
                 }
             }
             edge = edge.next;
@@ -200,16 +201,16 @@ public class ListGraph {
                 PathList subpaths = lengthPaths(originalSource, edge.sink, sink, length);
                 // go through all subpaths
                 boolean checkLength = false;
-                if (source.label.equals(originalSource.label)) { checkLength = true; }
+                if (source.equals(originalSource)) { checkLength = true; }
                 while (subpaths.hasNext()) {
                     Path pathToAdd = subpaths.next();
                     // add the paths with the current source and its subpaths to a list
                     if (checkLength) {
                         if (pathToAdd.length+1 == length) {
-                            pathList.add(new Path(source.label + " --" + edge.label + "--> " + pathToAdd.pathString, pathToAdd.length+1));
+                            pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));
                         }   
                     } else {
-                        pathList.add(new Path(source.label + " --" + edge.label + "--> " + pathToAdd.pathString, pathToAdd.length+1));
+                        pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));
                     }
                 }
             }
@@ -221,47 +222,51 @@ public class ListGraph {
 
     // Find shortest path(s) with minimum number of edges
     public Path shortestPath(VertexNode source, VertexNode sink) {
+        resetVisited();
         VertexQueue q = new VertexQueue();
-        q.enqueue(source);
+        q.enqueue(source, new Path(source.label, 0));
         while (!q.isEmpty()) {
-            VertexNode vertex = q.dequeue();
-            EdgeNode edge = vertex.edgeList;
-            while(edge != null) {            
+            QueueNode node = q.dequeue();
+            EdgeNode edge = node.vertex.edgeList;
+            while(edge != null) {           
+                Path pathToVertex = new Path(node.path + " --" + edge + "--> " + edge.sink, node.path.length+1);
                 // if this edge is not visited
+                if (edge.sink.equals(sink)) { 
+                    return pathToVertex;
+                }
                 if (!edge.sink.visited) {
                     edge.sink.visited = true;
-                    q.enqueue(edge.sink); 
+                    q.enqueue(edge.sink, pathToVertex); 
                 }
                 edge = edge.next;
             }
         }
-        throw new UnsupportedOperationException();
+        return null;
     }
     
     // Find paths that match a pattern between A and B
-    /* 
-    ( ) = grouping
-    | = or
-    * = previous edge label occurs 0 or more times
-    + = previous edge label occurs 1 or more times
-    ? = previous edge label occurs 0 or 1 time
-    . = any single edge label
-    R = a+(d|b)ab matches adab, aadab, abab etc.
-    R = a(bc)* matches abc, a, abcbc etc.
-    R = a.c matches abc, adc, etc.
-    R = ab? matches a, ab
-    */
     public PathList patternedPaths(VertexNode source, VertexNode sink, String pattern) { 
         PathList patternPaths = new PathList();
+        pattern = pattern.replaceAll("\\.", ".*");
+        //pattern = pattern.replaceAll("\\s", "");
         PathList paths = allPaths(source, sink);
-        String[] patternArray = pattern.split(" ");
+        Pattern p = Pattern.compile(pattern);
+        //System.out.println("Looking for: " + p.pattern());
         while (paths.hasNext()) {
-            boolean valid = true;
             Path current = paths.next();
-            int patternIndex = 0;
-            LinkedListStack pathStack;
+            String[] pathArray = current.pathString.split(" ");
+            //System.out.println(current.pathString);
+            String edgePathString = "";
+            for (int i=0; i<pathArray.length; i++) {
+                if (i%2==1) { edgePathString += pathArray[i].substring(2,pathArray[i].length()-3) + " "; }
+            }
+            Matcher m = p.matcher(edgePathString.trim());
+            if (m.matches()) { 
+                System.out.println("Matching edge path:" + edgePathString);
+                patternPaths.add(new Path(current)); 
+            }
         }
-        throw new UnsupportedOperationException();
+        return patternPaths;
     }
 
-} // ListGraph
+} // Graph
