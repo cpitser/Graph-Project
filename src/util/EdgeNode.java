@@ -10,9 +10,7 @@ public class EdgeNode {
         label = edgeLabel;
     }
 
-    public boolean equals(EdgeNode other) {
-        return (label.equals(other.label) && sink.label.equals(other.sink.label));
-    }
+    public boolean equals(EdgeNode other) { return (label.equals(other.label) && sink.label.equals(other.sink.label)); }
 
     public String toString(){ return label; }
 } // EdgeNode

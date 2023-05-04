@@ -6,53 +6,23 @@ import java.util.regex.*;
 import util.*;
 
 public class Graph {
-    private VertexNode vertices;
+    private VertexNode[] vertices;
     private int V;
-    private Path memoization;
+    private int MAXSIZE = 10;
 
     public Graph(String filename) {
         V = 0;
         File file = new File(filename);
-        initializeVertices(file);
-        initializeEdges(file);
+        initialize(file);
     }
 
-    private void initializeVertices(File file) {
+    private void initialize(File file) {
         try {
-            Scanner vertexScanner = new Scanner(file);
-            vertices = new VertexNode(vertexScanner.next());
-            vertexScanner.next();
-            vertices.next = new VertexNode(vertexScanner.next());
-            vertexScanner.nextLine();
-            while(vertexScanner.hasNext()) {
-                VertexNode current = vertices;
-                String newLabel1 = vertexScanner.next();
-                vertexScanner.next();
-                String newLabel2 = vertexScanner.next();
-                boolean firstExists = false;
-                boolean secondExists = false;
-                if (vertexScanner.hasNextLine()) { vertexScanner.nextLine(); }
-                while (current != null) {
-                    if (current.label.equals(newLabel1)) {
-                        firstExists = true;
-                    } 
-                    if (current.label.equals(newLabel2)) {
-                        secondExists = true;
-                    } 
-                    if (current.next == null) {
-                        if (!firstExists) { 
-                            current.next = new VertexNode(newLabel1); 
-                            current = current.next;
-                            V++;
-                        }
-                        if (!secondExists) { 
-                            current.next = new VertexNode(newLabel2);                            
-                            V++;
-                        }
-                        break;
-                    } 
-                    else { current = current.next; }
-                }
+            Scanner scanner = new Scanner(file);
+            vertices = new VertexNode[MAXSIZE];
+            while (scanner.hasNext()) {
+                add(scanner.next(), scanner.next(), scanner.next());
+                if (scanner.hasNextLine()) { scanner.nextLine(); }
             }
         } catch (FileNotFoundException fnfe) {
             System.out.println("File not found or inaccessable.");
@@ -63,93 +33,69 @@ public class Graph {
         }
     }
 
-    private void initializeEdges(File file) {
-        try { 
-            Scanner edgeScanner = new Scanner(file);
-            int line = 1;
-            while (edgeScanner.hasNext()) {
-                VertexNode vertex = vertices;
-                VertexNode source = null;
-                VertexNode sink = null;
-                String sourceLabel = edgeScanner.next();
-                String edgeLabel = edgeScanner.next();
-                String sinkLabel = edgeScanner.next();
-                if (edgeScanner.hasNextLine()) { edgeScanner.nextLine(); }
-                // find source and sink vertices in which the edge starts and ends
-                while (vertex != null) {
-                    if (vertex.label.equals(sourceLabel)) { source = vertex; }
-                    if (vertex.label.equals(sinkLabel)) { sink = vertex; }
-                    vertex = vertex.next;
-                }
-                // if source or sink null or same, error
-                if (source == null || sink == null || sourceLabel.equals(sinkLabel)) {
-                    System.out.println("Error within input file (edge creation).");
-                    System.exit(1);
-                }
-                // first edge for this source vertex
-                if (source.edgeList == null) {
-                    source.edgeList = new EdgeNode(edgeLabel, sink);
-                } 
-                // not first edge for this source vertex
-                else {
-                    EdgeNode edge = source.edgeList;
-                    EdgeNode newEdge = new EdgeNode(edgeLabel, sink);
-                    while (edge != null) { 
-                        if (edge.equals(newEdge)) { break; }
-                        if (edge.next == null) { 
-                            edge.next = newEdge;
-                            //System.out.println("New Edge: " + sourceLabel + " --" + edgeLabel + "--> " + sinkLabel); DEBUGGING
-                            break; 
-                        }
-                        edge = edge.next;
-                    }
-                }
-                line++;
-            }
-        } catch (FileNotFoundException fnfe) {
-            System.out.println("File not found or inaccessable.");
-            System.exit(1);
+    private void add(String source, String edge, String sink) {
+        int sourceIndex = -1;
+        int sinkIndex = -1;
+        for (int i=0; i<V; i++) { 
+            if (vertices[i].label.equals(source)) { sourceIndex = i; }
+            if (vertices[i].label.equals(sink)) { sinkIndex = i; }
+        }
+        if (sourceIndex == -1) {
+            resize();
+            vertices[V] = new VertexNode(source);
+            System.out.println("New vertex: " + source);
+            sourceIndex = V;
+            V++;
+        }
+        if (sinkIndex == -1) {
+            resize();
+            vertices[V] = new VertexNode(sink);
+            System.out.println("New vertex: " + sink);
+            sinkIndex = V;
+            V++;
+        }
+        EdgeNode newEdge = new EdgeNode(edge, vertices[sinkIndex]);
+        System.out.println("New edge: " + edge);
+        newEdge.next = vertices[sourceIndex].edgeList;
+        vertices[sourceIndex].edgeList = newEdge;
+    }
+
+    private void resize() {
+        if (V == MAXSIZE) {
+            MAXSIZE *= 1.5;
+            VertexNode[] temp = new VertexNode[MAXSIZE];
+            for (int i=0; i<V; i++) { temp[i] = vertices[i]; }
+            vertices = temp;
         }
     }
 
     public void printVertices() {
-        VertexNode current = vertices;
-        System.out.print("Vertices: ");
-        while (current.next != null) {
-            System.out.print(current.label + ", ");
-            current = current.next;
+        for (int i=0; i<V; i++) {
+            System.out.println(vertices[i].label); 
         }
-        System.out.println(current.label);
     }
 
     public void printEdges() {
-        VertexNode current = vertices;
-        while (current != null) {
-            EdgeNode edge = current.edgeList;
+        for (int i=0; i<V; i++) {
+            EdgeNode edge = vertices[i].edgeList;
             while (edge != null) {
-                System.out.println(current.label + " --" + edge.label + "--> " + edge.sink.label);
+                System.out.println(vertices[i].label + " --" + edge.label + "--> " + edge.sink.label);
                 edge = edge.next;
             }
-            current = current.next;
         }
     }
 
     public VertexNode find(String vertex) {
-        VertexNode current = vertices;
-        boolean found = false;
-        while (current != null) { 
-            if (current.label.equals(vertex)) { return current; } 
-            current = current.next;    
+        for (int i=0; i<V; i++) { 
+            if (vertices[i].label.equals(vertex)) {
+                return vertices[i];
+            }
         }
-        return null; 
+        return null;
     }
 
     private void resetVisited() {
-        VertexNode current = vertices;
-        while (current != null) {
-            current.visited = false;
-            current = current.next;
-        }
+        for (int i=0; i<V; i++) { vertices[i].visited = false; }
     }
 
     // Find all directed paths between A and B
