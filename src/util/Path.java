@@ -1,8 +1,8 @@
 package util;
 
 public class Path {
-    public final String pathString;
-    public final int length;
+    public String pathString;
+    public int length;
     public Path next;
 
     public Path(Path old) { 

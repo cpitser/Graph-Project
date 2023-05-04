@@ -55,14 +55,14 @@ public class Graph {
                 }
             }
         } catch (FileNotFoundException fnfe) {
-            System.err.println("File not found or inaccessable.");
+            System.out.println("File not found or inaccessable.");
             System.exit(1);
         } catch (NoSuchElementException nsee) {
-            System.err.println("Error within input file: expected more fields in a line.");
+            System.out.println("Error within input file: expected more fields in a line.");
             System.exit(1);
         }
     }
-    
+
     private void initializeEdges(File file) {
         try { 
             Scanner edgeScanner = new Scanner(file);
@@ -83,7 +83,7 @@ public class Graph {
                 }
                 // if source or sink null or same, error
                 if (source == null || sink == null || sourceLabel.equals(sinkLabel)) {
-                    System.err.println("Error within input file (edge creation).");
+                    System.out.println("Error within input file (edge creation).");
                     System.exit(1);
                 }
                 // first edge for this source vertex
@@ -107,7 +107,7 @@ public class Graph {
                 line++;
             }
         } catch (FileNotFoundException fnfe) {
-            System.err.println("File not found or inaccessable.");
+            System.out.println("File not found or inaccessable.");
             System.exit(1);
         }
     }
@@ -236,7 +236,7 @@ public class Graph {
                 }
                 if (!edge.sink.visited) {
                     edge.sink.visited = true;
-                    q.enqueue(edge.sink, pathToVertex); 
+                    q.enqueue(edge.sink, pathToVertex);
                 }
                 edge = edge.next;
             }

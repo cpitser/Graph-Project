@@ -41,6 +41,7 @@ public class GraphDriver {
             switch (command) {
                 case "a":
                     paths = graph.allPaths(start, end);
+                    System.out.println("All paths from " + start + " to " + end + ":");
                     paths.print();
                     break;
                 case "l":
@@ -48,6 +49,7 @@ public class GraphDriver {
                     try {
                         int length = input.nextInt();
                         paths = graph.lengthPaths(start,start,end,length);
+                        System.out.println("All paths from " + start + " to " + end + " with length " + length + ":");
                         paths.print();
                     } catch (InputMismatchException ime) {
                         System.out.println("Please enter a valid number.");
@@ -58,7 +60,10 @@ public class GraphDriver {
                 case "s":
                     Path shortest = graph.shortestPath(start, end);
                     if (shortest == null) { System.out.println("No path exists."); }
-                    else { System.out.println(shortest + " length: " + shortest.length); }
+                    else {
+                        System.out.println("First shortest path from " + start + " to " + end + ":"); 
+                        System.out.println("(Length: " + shortest.length + ")   " + shortest); 
+                    }
                     break;
                 case "p":
                     System.out.println("When entering pattern, add spaces between each edge label.");

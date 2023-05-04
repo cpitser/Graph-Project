@@ -29,11 +29,13 @@ public class PathList {
 
     public void print() { 
         Path temp = current;
+        current = first;
         if (this.isEmpty()) { System.out.println("No path exists."); }
         else { 
+            int i = 0;
             while (this.hasNext()) {
                 Path path = this.next();
-                System.out.println(path + " length: " + path.length);
+                System.out.println("(Length: " + path.length + ")   " + path);
             }
         }
         current = temp;
