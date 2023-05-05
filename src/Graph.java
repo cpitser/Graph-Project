@@ -43,19 +43,16 @@ public class Graph {
         if (sourceIndex == -1) {
             resize();
             vertices[V] = new VertexNode(source);
-            System.out.println("New vertex: " + source);
             sourceIndex = V;
             V++;
         }
         if (sinkIndex == -1) {
             resize();
             vertices[V] = new VertexNode(sink);
-            System.out.println("New vertex: " + sink);
             sinkIndex = V;
             V++;
         }
         EdgeNode newEdge = new EdgeNode(edge, vertices[sinkIndex]);
-        System.out.println("New edge: " + edge);
         newEdge.next = vertices[sourceIndex].edgeList;
         vertices[sourceIndex].edgeList = newEdge;
     }
@@ -71,7 +68,7 @@ public class Graph {
 
     public void printVertices() {
         for (int i=0; i<V; i++) {
-            System.out.println(vertices[i].label); 
+            System.out.print(vertices[i].label + " "); 
         }
     }
 
@@ -79,7 +76,7 @@ public class Graph {
         for (int i=0; i<V; i++) {
             EdgeNode edge = vertices[i].edgeList;
             while (edge != null) {
-                System.out.println(vertices[i].label + " --" + edge.label + "--> " + edge.sink.label);
+                System.out.print(vertices[i].label + " --" + edge.label + "--> " + edge.sink.label);
                 edge = edge.next;
             }
         }
@@ -193,11 +190,12 @@ public class Graph {
     // Find paths that match a pattern between A and B
     public PathList patternedPaths(VertexNode source, VertexNode sink, String pattern) { 
         PathList patternPaths = new PathList();
-        pattern = pattern.replaceAll("\\.", ".*");
+        pattern = pattern.replaceAll("\\.", "(\\\\w)*");
+        pattern = pattern + " ";
         //pattern = pattern.replaceAll("\\s", "");
         PathList paths = allPaths(source, sink);
         Pattern p = Pattern.compile(pattern);
-        //System.out.println("Looking for: " + p.pattern());
+        System.out.println("Looking for: " + p.pattern());
         while (paths.hasNext()) {
             Path current = paths.next();
             String[] pathArray = current.pathString.split(" ");
@@ -206,7 +204,7 @@ public class Graph {
             for (int i=0; i<pathArray.length; i++) {
                 if (i%2==1) { edgePathString += pathArray[i].substring(2,pathArray[i].length()-3) + " "; }
             }
-            Matcher m = p.matcher(edgePathString.trim());
+            Matcher m = p.matcher(edgePathString);
             if (m.matches()) { 
                 System.out.println("Matching edge path:" + edgePathString);
                 patternPaths.add(new Path(current)); 

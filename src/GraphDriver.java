@@ -66,14 +66,10 @@ public class GraphDriver {
                     }
                     break;
                 case "p":
-                    System.out.println("When entering pattern, add spaces between each edge label.");
-                    System.out.println("Instead of .* use (.)* and do not use this ");
                     System.out.print("Enter the pattern of edges of paths you would like to find: ");
                     String pattern = input.nextLine();
                     paths = graph.patternedPaths(start,end,pattern);
-                    System.out.println("Printing paths:");
                     paths.print();
-                    System.out.println("Done printing paths.");
                     break;
                 case "q":
                     System.exit(0);
