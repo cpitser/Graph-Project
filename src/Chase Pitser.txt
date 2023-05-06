@@ -11,5 +11,5 @@ javac -cp bin -d bin util\QueueNode.java util\VertexQueue.java
 javac -cp bin -d bin Graph.java
 javac -cp bin -d bin GraphDriver.java
 
-And I ran the program with the following command:
+And I ran the program with the following command, replacing [input file] with an actual file path:
 java -cp bin GraphDriver [input file]
