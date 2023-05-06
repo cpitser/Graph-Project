@@ -1,5 +1,6 @@
 package util;
 
+/* Class used to represent a path from one vertex to another in the graph */
 public class Path {
     public String pathString;
     public int length;

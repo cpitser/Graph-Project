@@ -1,5 +1,6 @@
 package util;
 
+/* Class used to represet a vertex in the graph */
 public class VertexNode {
     public final String label;
     public EdgeNode edgeList;

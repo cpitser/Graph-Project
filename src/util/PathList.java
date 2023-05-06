@@ -1,5 +1,6 @@
 package util;
 
+/* Class used to represent a list of paths, making operations easier */
 public class PathList {
     private Path first;
     private Path last;

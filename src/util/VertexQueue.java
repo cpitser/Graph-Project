@@ -2,6 +2,10 @@ package util;
 
 import java.util.NoSuchElementException;
 
+/* 
+ * Class used as a queue for vertices, used in breadth-first
+ * search in the shortest path query 
+ */
 public class VertexQueue {
 
     private QueueNode front;

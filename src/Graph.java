@@ -5,17 +5,20 @@ import java.util.NoSuchElementException;
 import java.util.regex.*;
 import util.*;
 
+/* Class used to represent a graph data structure */
 public class Graph {
     private VertexNode[] vertices;
-    private int V;
-    private int MAXSIZE = 10;
+    private int V; // represents number of vertices in the list
+    private int MAXSIZE = 10; // maximum size of the vertices array
 
+    /* Constructor of the Graph, takes an input file for creation */
     public Graph(String filename) {
         V = 0;
         File file = new File(filename);
         initialize(file);
     }
 
+    /* Private helper method used to initialize the vertices and edges of the graph */
     private void initialize(File file) {
         try {
             Scanner scanner = new Scanner(file);
@@ -33,6 +36,10 @@ public class Graph {
         }
     }
 
+    /* 
+     * Private helper method used to add the infromation 
+     * from a line from the file to the graph 
+     */
     private void add(String source, String edge, String sink) {
         int sourceIndex = -1;
         int sinkIndex = -1;
@@ -57,6 +64,7 @@ public class Graph {
         vertices[sourceIndex].edgeList = newEdge;
     }
 
+    /* Private helper method used to check and resize the vertices array */
     private void resize() {
         if (V == MAXSIZE) {
             MAXSIZE *= 1.5;
@@ -66,22 +74,19 @@ public class Graph {
         }
     }
 
+    /* Method used to list all vertices in the graph */
     public void printVertices() {
-        for (int i=0; i<V; i++) {
-            System.out.print(vertices[i].label + " "); 
+        System.out.print("Graph vertices: ");
+        for (int i=0; i<V-1; i++) {
+            System.out.print(vertices[i].label + ", "); 
         }
+        System.out.println(vertices[V-1]);
     }
 
-    public void printEdges() {
-        for (int i=0; i<V; i++) {
-            EdgeNode edge = vertices[i].edgeList;
-            while (edge != null) {
-                System.out.print(vertices[i].label + " --" + edge.label + "--> " + edge.sink.label);
-                edge = edge.next;
-            }
-        }
-    }
-
+    /* 
+     * Method used to find a vertex in the graph from an input String
+     * returns null if not located 
+     */
     public VertexNode find(String vertex) {
         for (int i=0; i<V; i++) { 
             if (vertices[i].label.equals(vertex)) {
@@ -91,15 +96,13 @@ public class Graph {
         return null;
     }
 
+    /* Private helper method used to reset all vertices to their unvisited state */
     private void resetVisited() {
         for (int i=0; i<V; i++) { vertices[i].visited = false; }
     }
 
-    // Find all directed paths between A and B
-        // recursively go through all unvisited nodes until reached sink or no more unvisited nodes
-        // add each path to a linked list
+    /* Method used to return all paths from a source vertex to a sink vertex */
     public PathList allPaths(VertexNode source, VertexNode sink) {
-        resetVisited();
         EdgeNode edge = source.edgeList;
         PathList pathList = new PathList();
         // if source is the sink the function is looking for
@@ -108,17 +111,13 @@ public class Graph {
         }
         // goes through all of the edges from source
         while(edge != null) {
-            // if this edge is not visited
-            if (!edge.sink.visited) {
-                edge.sink.visited = true; 
-                // get the list of all of the subpaths to the destination from this source
-                PathList subpaths = allPaths(edge.sink, sink);
-                // go through all subpaths
-                while (subpaths.hasNext()) {
-                    // add the paths with the current source and its subpaths to a list
-                    Path pathToAdd = subpaths.next();
-                    pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));   
-                }
+            // get the list of all of the subpaths to the destination from this source
+            PathList subpaths = allPaths(edge.sink, sink);
+            // go through all subpaths
+            while (subpaths.hasNext()) {
+                // add the paths with the current source and its subpaths to a list
+                Path pathToAdd = subpaths.next();
+                pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));   
             }
             edge = edge.next;
         }
@@ -126,9 +125,8 @@ public class Graph {
         return pathList;
     }
 
-    // Find directed paths of a given length (edge count) between A and B
+    /* Method used to return all paths of a given length from source to sink */
     public PathList lengthPaths(VertexNode originalSource, VertexNode source, VertexNode sink, int length) {
-        resetVisited();
         EdgeNode edge = source.edgeList;
         PathList pathList = new PathList();
         // if source is the sink the function is looking for
@@ -137,24 +135,20 @@ public class Graph {
         }
         // goes through all of the edges from source
         while(edge != null) {            
-            // if this edge is not visited
-            if (!edge.sink.visited) {
-                edge.sink.visited = true; 
-                // get the list of all of the subpaths to the destination from this source
-                PathList subpaths = lengthPaths(originalSource, edge.sink, sink, length);
-                // go through all subpaths
-                boolean checkLength = false;
-                if (source.equals(originalSource)) { checkLength = true; }
-                while (subpaths.hasNext()) {
-                    Path pathToAdd = subpaths.next();
-                    // add the paths with the current source and its subpaths to a list
-                    if (checkLength) {
-                        if (pathToAdd.length+1 == length) {
-                            pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));
-                        }   
-                    } else {
+            // get the list of all of the subpaths to the destination from this source
+            PathList subpaths = lengthPaths(originalSource, edge.sink, sink, length);
+            // go through all subpaths
+            boolean checkLength = false;
+            if (source.equals(originalSource)) { checkLength = true; }
+            while (subpaths.hasNext()) {
+                Path pathToAdd = subpaths.next();
+                // add the paths with the current source and its subpaths to a list
+                if (checkLength) {
+                    if (pathToAdd.length+1 == length) {
                         pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));
-                    }
+                    }   
+                } else {
+                    pathList.add(new Path(source + " --" + edge + "--> " + pathToAdd, pathToAdd.length+1));
                 }
             }
             edge = edge.next;
@@ -163,20 +157,25 @@ public class Graph {
         return pathList;
     }
 
-    // Find shortest path(s) with minimum number of edges
+    /* Method used to return the first shortest path from source to sink */
     public Path shortestPath(VertexNode source, VertexNode sink) {
         resetVisited();
+        // use a queue to enact a breadth-first search algorithm to find shortest path
         VertexQueue q = new VertexQueue();
         q.enqueue(source, new Path(source.label, 0));
+        // continue until no more vertices can be reached, queue is empty
         while (!q.isEmpty()) {
             QueueNode node = q.dequeue();
             EdgeNode edge = node.vertex.edgeList;
             while(edge != null) {           
                 Path pathToVertex = new Path(node.path + " --" + edge + "--> " + edge.sink, node.path.length+1);
-                // if this edge is not visited
+                // if destination, return this path
                 if (edge.sink.equals(sink)) { 
                     return pathToVertex;
                 }
+                // if vertex not encountered (visited), enqueue it
+                // no further checking for visited nodes required because 
+                // this algorithm only enqueues non-encountered vertices
                 if (!edge.sink.visited) {
                     edge.sink.visited = true;
                     q.enqueue(edge.sink, pathToVertex);
@@ -187,26 +186,32 @@ public class Graph {
         return null;
     }
     
-    // Find paths that match a pattern between A and B
+    /* Method used to return all paths of a certain pattern from source to sink */
     public PathList patternedPaths(VertexNode source, VertexNode sink, String pattern) { 
         PathList patternPaths = new PathList();
-        pattern = pattern.replaceAll("\\.", "(\\\\w)*");
+        // edit the input path string to work properly with regex functions
         pattern = pattern + " ";
-        //pattern = pattern.replaceAll("\\s", "");
+        pattern = pattern.replace(")* ", ")*");
+        pattern = pattern.replace(")+ ", ")+");
+        pattern = pattern.replace(")? ", ")?");
+        pattern = pattern.replace(")*", " )*");
+        pattern = pattern.replace(")+", " )+");
+        pattern = pattern.replace(")?", " )?");
+        pattern = pattern.replace(".","(\\w)*");
         PathList paths = allPaths(source, sink);
         Pattern p = Pattern.compile(pattern);
-        System.out.println("Looking for: " + p.pattern());
+        // loop through all paths from source to sink
         while (paths.hasNext()) {
             Path current = paths.next();
+            // create a new string of this path that can be matched with the pattern
             String[] pathArray = current.pathString.split(" ");
-            //System.out.println(current.pathString);
             String edgePathString = "";
             for (int i=0; i<pathArray.length; i++) {
                 if (i%2==1) { edgePathString += pathArray[i].substring(2,pathArray[i].length()-3) + " "; }
             }
+            // test if this path matches
             Matcher m = p.matcher(edgePathString);
             if (m.matches()) { 
-                System.out.println("Matching edge path:" + edgePathString);
                 patternPaths.add(new Path(current)); 
             }
         }

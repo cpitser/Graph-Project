@@ -1,5 +1,6 @@
 package util;
 
+/* Class used to represent an edge in the graph */
 public class EdgeNode {
     public final VertexNode sink;
     public final String label;
