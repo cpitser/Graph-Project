@@ -18,7 +18,7 @@ public class Graph {
         initialize(file);
     }
 
-    /* Private helper method used to initialize the vertices and edges of the graph */
+    /* Private helper method that initializes the vertices and edges of the graph */
     private void initialize(File file) {
         try {
             Scanner scanner = new Scanner(file);
@@ -37,7 +37,7 @@ public class Graph {
     }
 
     /* 
-     * Private helper method used to add the infromation 
+     * Private helper method that adds the infromation 
      * from a line from the file to the graph 
      */
     private void add(String source, String edge, String sink) {
@@ -64,7 +64,7 @@ public class Graph {
         vertices[sourceIndex].edgeList = newEdge;
     }
 
-    /* Private helper method used to check and resize the vertices array */
+    /* Private helper method that checks and resizes the vertices array */
     private void resize() {
         if (V == MAXSIZE) {
             MAXSIZE *= 1.5;
@@ -74,7 +74,7 @@ public class Graph {
         }
     }
 
-    /* Method used to list all vertices in the graph */
+    /* Prints all vertices in the graph */
     public void printVertices() {
         System.out.print("Graph vertices: ");
         for (int i=0; i<V-1; i++) {
@@ -83,10 +83,7 @@ public class Graph {
         System.out.println(vertices[V-1]);
     }
 
-    /* 
-     * Method used to find a vertex in the graph from an input String
-     * returns null if not located 
-     */
+    /* Finds a vertex in the graph from an input String, returning it, or null if not located */
     public VertexNode find(String vertex) {
         for (int i=0; i<V; i++) { 
             if (vertices[i].label.equals(vertex)) {
@@ -96,12 +93,12 @@ public class Graph {
         return null;
     }
 
-    /* Private helper method used to reset all vertices to their unvisited state */
+    /* Private helper method that resets all vertices to their unvisited state */
     private void resetVisited() {
         for (int i=0; i<V; i++) { vertices[i].visited = false; }
     }
 
-    /* Method used to return all paths from a source vertex to a sink vertex */
+    /* Returns all paths from a source vertex to a sink vertex */
     public PathList allPaths(VertexNode source, VertexNode sink) {
         EdgeNode edge = source.edgeList;
         PathList pathList = new PathList();
@@ -125,7 +122,7 @@ public class Graph {
         return pathList;
     }
 
-    /* Method used to return all paths of a given length from source to sink */
+    /* Returns all paths of a given length from source to sink */
     public PathList lengthPaths(VertexNode originalSource, VertexNode source, VertexNode sink, int length) {
         EdgeNode edge = source.edgeList;
         PathList pathList = new PathList();
@@ -157,7 +154,7 @@ public class Graph {
         return pathList;
     }
 
-    /* Method used to return the first shortest path from source to sink */
+    /* Returns the first shortest path from source to sink */
     public Path shortestPath(VertexNode source, VertexNode sink) {
         resetVisited();
         // use a queue to enact a breadth-first search algorithm to find shortest path
@@ -186,7 +183,7 @@ public class Graph {
         return null;
     }
     
-    /* Method used to return all paths of a certain pattern from source to sink */
+    /* Returns all paths of a certain pattern from source to sink */
     public PathList patternedPaths(VertexNode source, VertexNode sink, String pattern) { 
         PathList patternPaths = new PathList();
         // edit the input path string to work properly with regex functions

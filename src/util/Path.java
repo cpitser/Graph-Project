@@ -6,6 +6,7 @@ public class Path {
     public int length;
     public Path next;
 
+    /* Creates a copy of a path object */
     public Path(Path old) { 
         pathString = old.pathString; 
         length = old.length;    

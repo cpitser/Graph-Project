@@ -10,6 +10,7 @@ public class PathList {
 
     public PathList(Path path) { first  = last = current = path; }
 
+    /* Add a path to the list */
     public void add(Path path) {
         if (first == null) { first = last = current = path; } 
         else { 
@@ -20,6 +21,7 @@ public class PathList {
 
     public boolean hasNext() { return current != null; }
 
+    /* Iterate over the list */
     public Path next() {
         Path temp = current;
         current = current.next;

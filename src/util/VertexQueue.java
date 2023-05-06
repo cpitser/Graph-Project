@@ -30,8 +30,6 @@ public class VertexQueue {
         }
     }
 
-    public QueueNode front() { return front; }
-
     public boolean isEmpty() { return front==null; }
 
 } // VertexNode
